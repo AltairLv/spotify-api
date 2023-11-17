@@ -4,13 +4,13 @@ This project simplifies the process of getting information about the current or 
 ( Title, Album, Artists, Album Cover ... ) on Spotify by managing access tokens, refreshing the token when necessary¹.
 A database such as Redis is used to efficiently store and retrieve access tokens. All done through Spotify's API.
 
-1. Access Tokens lasts 1 hour.
+1. Access Tokens last 1 hour.
 
 _(Redis was a personal choice, I do generally recommend a normal Database)_
 
 ## ☑️ To-do
 
-- [ ] Fix new Redis instance creation on each request.
+- [x] Fix multiple Redis instances.
 - [ ] Implement Cache Manager ?
 - [ ] Add Unit Testing
 - [ ] Add End-to-end Testing

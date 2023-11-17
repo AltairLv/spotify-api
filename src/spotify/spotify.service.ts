@@ -3,23 +3,24 @@ import {Cache} from 'cache-manager'
 import type {ICreate, ISpotify} from './types/types'
 import {accessTokenSchema, playingSpotifySchema, recentSpotifySchema} from './zod/zod'
 import {CACHE_MANAGER} from '@nestjs/cache-manager'
-import Redis from 'ioredis'
+import {RedisService} from '../redis/redis.service'
 
 @Injectable()
 export class SpotifyService {
-  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly redisService: RedisService
+  ) {}
 
   async create(): Promise<ICreate> {
     const client_id = process.env.SPOTIFY_CLIENT_ID
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET
     const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN
-    const redis = new Redis(process.env.REDIS_URI)
 
     try {
-      const getCachedToken = await redis.get('token')
+      const getCachedToken = await this.redisService.getValue('token')
 
       if (getCachedToken) {
-        redis.disconnect()
         return JSON.parse(getCachedToken)
       }
 
@@ -39,8 +40,7 @@ export class SpotifyService {
       const validResponse = accessTokenSchema.parse(responseJson)
 
       const stringFormat = JSON.stringify(validResponse)
-      await redis.set('token', stringFormat, 'EX', 3600)
-      redis.disconnect()
+      await this.redisService.setValue('token', stringFormat, 3600)
 
       return {access_token: validResponse.access_token}
     } catch (err) {

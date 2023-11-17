@@ -2,6 +2,8 @@ import {Module} from '@nestjs/common'
 import {SpotifyModule} from './spotify/spotify.module'
 import {ConfigModule} from '@nestjs/config'
 import {CacheModule} from '@nestjs/cache-manager'
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -10,8 +12,9 @@ import {CacheModule} from '@nestjs/cache-manager'
       isGlobal: true,
     }),
     SpotifyModule,
+    RedisModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [RedisService],
 })
 export class AppModule {}
